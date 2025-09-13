@@ -1,18 +1,4 @@
 services:
-  nginx:
-    build:
-      context: .
-      dockerfile: nginx.dockerfile
-    ports:
-      - 80:80
-    volumes:
-      - ./src:/var/www/html
-    depends_on:
-      - php
-  php:
-   build:
-      context: .
-      dockerfile: php.dockerfile
   mysql:
     image: mysql:8.4
     ports:
@@ -24,20 +10,40 @@ services:
       MYSQL_ROOT_PASSWORD: secret
     volumes:
       - ./mysql:/var/lib/mysql
+  php:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - mysql
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - mysql
+      - php
   composer:
-      build:
-        context: .
-        dockerfile: composer.dockerfile
-      volumes:
-        - ./src:/var/www/html
-      working_dir: /var/www/html
+    build:
+      context: .
+      dockerfile: composer.dockerfile
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+
   artisan:
-      build:
-        context: .
-        dockerfile: php.dockerfile
-      volumes:
-        - ./src:/var/www/html
-      working_dir: /var/www/html
-      depends_on:
-        - mysql
-      entrypoint: ["php", "/var/www/html/artisan"]
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - mysql
+    entrypoint: ["php", "/var/www/html/artisan"]

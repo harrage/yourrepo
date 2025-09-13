@@ -20,7 +20,7 @@ trait HasFilters
         foreach ($this->processedFilters() as $filter) {
             try {
                 $filter = explode('=', $filter);
-                $filteredValues[$filter[0]] = explode(',', $filter[1]);
+                $filteredValues[$filter[0]] = explode('|', $filter[1]);
             } catch (\ErrorException) {
             }
         }
@@ -30,6 +30,6 @@ trait HasFilters
 
     protected function processedFilters(): array
     {
-        return explode('|', $this->query($this->getFilterKeyName()));
+        return explode(',', $this->query($this->getFilterKeyName()));
     }
 }

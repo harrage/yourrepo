@@ -13,6 +13,7 @@ class ArticleController extends Controller
     public function index(ListArticlesRequest $request)
     {
         $articles = Article::filter($request->filters())
+            ->with(['author', 'category', 'source'])
             ->simplePaginate($request->input('per_page'));
 
         return ArticleResource::collection($articles);

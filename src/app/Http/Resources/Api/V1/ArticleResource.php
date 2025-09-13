@@ -22,6 +22,7 @@ class ArticleResource extends JsonResource
             'url' => $this->url,
             'url_image' => $this->url_image,
             'published_at' => $this->published_at,
+            'published_at__readable' => $this->published_at->diffForHumans(),
             'author' => new AuthorResource($this->whenLoaded(relationship: 'author')),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'source' => new SourceResource($this->whenLoaded('source')),

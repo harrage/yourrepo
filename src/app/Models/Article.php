@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Filters\ArticleFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -22,6 +23,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Article extends Model
 {
+
+    public function casts(): array
+    {
+        return [
+            'published_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime'
+        ];
+    }
     /**
      * @return BelongsTo<Author, Article>
      */

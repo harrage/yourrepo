@@ -17,19 +17,19 @@ class ArticleFilter extends Filter
         return $query->where('source_id', $value);
     }
 
-    public function dateFrom(Builder $query, mixed $value): Builder
+    public function date_from(Builder $query, mixed $value): Builder
     {
         return $query->where('published_at', '>=', $value);
     }
 
-    public function dateTo(Builder $query, mixed $value): Builder
+    public function date_to(Builder $query, mixed $value): Builder
     {
+        Log::debug($value);
         return $query->where('published_at', '<=', $value);
     }
 
     public function keywords(Builder $query, mixed $value): Builder
     {
-        Log::debug($value);
         if (empty($value)) {
             return $query;
         }
