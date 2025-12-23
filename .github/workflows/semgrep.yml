@@ -22,7 +22,7 @@ jobs:
         run: pip install semgrep
 
       - name: Run Semgrep
-        run: semgrep --config semgrep-rules --sarif > semgrep-results.sarif
+        run: semgrep --config semgrep-rules-develop --sarif > semgrep-results.sarif
 
       - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@v2
