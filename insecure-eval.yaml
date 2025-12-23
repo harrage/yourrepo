@@ -1,0 +1,208 @@
+rules:
+
+# =================================================
+# 🔥 RCE / CODE EXECUTION
+# =================================================
+
+- id: php.eval
+  languages: [php]
+  severity: ERROR
+  message: "eval() is forbidden."
+  pattern: eval($X);
+
+- id: php.assert
+  languages: [php]
+  severity: ERROR
+  message: "assert() with dynamic input can lead to RCE."
+  pattern: assert($X);
+
+- id: php.exec-family
+  languages: [php]
+  severity: ERROR
+  message: "Dangerous command execution function."
+  pattern-either:
+    - pattern: exec($X);
+    - pattern: system($X);
+    - pattern: shell_exec($X);
+    - pattern: passthru($X);
+    - pattern: popen($X, $Y);
+    - pattern: proc_open($X, $Y, $Z);
+
+- id: php.create-function
+  languages: [php]
+  severity: ERROR
+  message: "create_function() is unsafe."
+  pattern: create_function($X, $Y);
+
+- id: php.variable-function-call
+  languages: [php]
+  severity: WARNING
+  message: "Variable function call detected."
+  pattern: $FUNC(...);
+  metavariable-regex:
+    metavariable: $FUNC
+    regex: "\\$.*"
+
+- id: php.call-user-func
+  languages: [php]
+  severity: WARNING
+  message: "call_user_func with dynamic input."
+  pattern: call_user_func($X, ...);
+
+- id: php.unserialize
+  languages: [php]
+  severity: ERROR
+  message: "Unserialize on untrusted data."
+  pattern: unserialize($X);
+
+# =================================================
+# 💉 SQL INJECTION
+# =================================================
+
+- id: php.sql-interpolation
+  languages: [php]
+  severity: WARNING
+  message: "SQL query built with interpolation."
+  pattern: |
+    $DB->query("...$VAR...");
+
+- id: php.mysql-query
+  languages: [php]
+  severity: WARNING
+  message: "mysql_query is deprecated and unsafe."
+  pattern: mysql_query($X);
+
+- id: laravel.db-raw
+  languages: [php]
+  severity: WARNING
+  message: "DB::raw detected."
+  pattern: DB::raw($X);
+
+- id: laravel.where-raw
+  languages: [php]
+  severity: WARNING
+  message: "whereRaw detected."
+  pattern: whereRaw($X);
+
+# =================================================
+# 🌍 XSS
+# =================================================
+
+- id: php.echo-variable
+  languages: [php]
+  severity: WARNING
+  message: "Echoing variable may cause XSS."
+  pattern: echo $X;
+
+- id: php.print-variable
+  languages: [php]
+  severity: WARNING
+  message: "print with variable may cause XSS."
+  pattern: print $X;
+
+- id: blade.unescaped-output
+  languages: [php]
+  severity: WARNING
+  message: "Unescaped Blade output."
+  pattern-regex: "\\{!!.*!!}"
+
+# =================================================
+# 🌐 SSRF / NETWORK
+# =================================================
+
+- id: php.file-get-contents-url
+  languages: [php]
+  severity: WARNING
+  message: "file_get_contents with dynamic input."
+  pattern: file_get_contents($X);
+
+- id: php.fopen-url
+  languages: [php]
+  severity: WARNING
+  message: "fopen with dynamic path."
+  pattern: fopen($X, $Y);
+
+- id: php.curl-exec
+  languages: [php]
+  severity: WARNING
+  message: "curl_exec on dynamic handle."
+  pattern: curl_exec($X);
+
+# =================================================
+# 📂 FILE SYSTEM
+# =================================================
+
+- id: php.move-uploaded-file
+  languages: [php]
+  severity: WARNING
+  message: "File upload detected."
+  pattern: move_uploaded_file($X, $Y);
+
+- id: php.unlink
+  languages: [php]
+  severity: WARNING
+  message: "File deletion detected."
+  pattern: unlink($X);
+
+- id: php.chmod
+  languages: [php]
+  severity: WARNING
+  message: "chmod with dynamic permissions."
+  pattern: chmod($X, $Y);
+
+# =================================================
+# 🔐 AUTH / LARAVEL
+# =================================================
+
+- id: laravel.request-all
+  languages: [php]
+  severity: WARNING
+  message: "request()->all() used."
+  pattern: request()->all();
+
+# =================================================
+# 🧪 DEBUG / DEV
+# =================================================
+
+- id: php.dd
+  languages: [php]
+  severity: ERROR
+  message: "dd() left in code."
+  pattern: dd(...);
+
+- id: php.dump
+  languages: [php]
+  severity: WARNING
+  message: "dump() left in code."
+  pattern: dump(...);
+
+- id: php.var-dump
+  languages: [php]
+  severity: WARNING
+  message: "var_dump() left in code."
+  pattern: var_dump(...);
+
+# =================================================
+# ⚙️ CODE QUALITY / FOOTGUNS
+# =================================================
+
+- id: php.die-exit
+  languages: [php]
+  severity: WARNING
+  message: "die/exit used."
+  pattern-either:
+    - pattern: die($X);
+    - pattern: exit($X);
+
+- id: php.global-usage
+  languages: [php]
+  severity: INFO
+  message: "Global variable usage."
+  pattern: global $X;
+
+- id: php.error-suppression
+  languages: [php]
+  severity: WARNING
+  message: "Error suppression operator used."
+  pattern: $@X;
+

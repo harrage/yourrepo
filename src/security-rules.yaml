@@ -1,0 +1,18 @@
+rules:
+  - id: laravel-unsafe-like-query
+    languages:
+      - php
+    severity: WARNING
+    message: >
+      Using `$request->input()` directly in a `where('like', ...)` query may be unsafe.
+      Consider validating or sanitizing input before using it in Eloquent queries.
+    metadata:
+      category: security
+      framework: laravel
+      technology: php
+      confidence: MEDIUM
+    patterns:
+      - pattern: Source::where($FIELD, 'like', $REQUEST_INPUT . '%')->get()
+      - metavariable-pattern:
+          metavariable: $REQUEST_INPUT
+          pattern: $REQUEST->input(...)
